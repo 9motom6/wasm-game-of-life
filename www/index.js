@@ -18,13 +18,15 @@ canvas.width = (CELL_SIZE_PX + 1) * width + 1;
 
 const ctx = canvas.getContext('2d');
 
-const renderLoop = () => {
-    universe.tick();
+let animationId = null;
 
+const renderLoop = () => {
     drawGrid();
     drawCells();
 
-    requestAnimationFrame(renderLoop);
+    universe.tick();
+
+    animationId = requestAnimationFrame(renderLoop);
 };
 
 const drawGrid = () => {
@@ -83,6 +85,33 @@ const bitIsSet = (n, arr) => {
     return (arr[byte] & mask) === mask;
 };
 
+const isPaused = () => {
+    return animationId === null;
+};
+
+///////////// PAUSE PLAY
+const playPauseButton = document.getElementById("play-pause");
+
+const play = () => {
+    playPauseButton.textContent = "⏸";
+    renderLoop();
+};
+
+const pause = () => {
+    playPauseButton.textContent = "▶";
+    cancelAnimationFrame(animationId);
+    animationId = null;
+};
+
+playPauseButton.addEventListener("click", event => {
+    if (isPaused()) {
+        play();
+    } else {
+        pause();
+    }
+});
+
+///// START THE GAME
 drawGrid();
 drawCells();
-requestAnimationFrame(renderLoop);
+play();
