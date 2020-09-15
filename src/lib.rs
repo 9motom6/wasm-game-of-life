@@ -13,14 +13,6 @@ use fixedbitset::FixedBitSet;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen]
-#[repr(u8)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum Cell {
-    Dead = 0,
-    Alive = 1,
-}
-
-#[wasm_bindgen]
 pub struct Universe {
     width: u32,
     height: u32,
@@ -45,23 +37,6 @@ impl Universe {
             height,
             cells,
         }
-    }
-
-    pub fn tick(&mut self) {
-        let mut next = self.cells.clone();
-
-        for row in 0..self.height {
-            for col in 0..self.width {
-                let index = self.get_index(row, col);
-                let cell = self.cells[index];
-                let live_neighbors = self.live_neighbor_count(row, col);
-
-                // log!("cell[{}, {}] is initially {:?} and has {} live neighbors",row,col,cell,live_neighbors);
-                next.set(index, Universe::get_next_tick_cell_state(cell, live_neighbors));
-                // log!("    it becomes {:?}", next[index]);
-            }
-        }
-        self.cells = next;
     }
 
     /// Set the width of the universe.
@@ -92,6 +67,29 @@ impl Universe {
 
     pub fn cells(&self) -> *const u32 {
         self.cells.as_slice().as_ptr()
+    }
+
+    /// Update all cells according to Game of Life rules
+    pub fn tick(&mut self) {
+        let mut next = self.cells.clone();
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let index = self.get_index(row, col);
+                let cell = self.cells[index];
+                let live_neighbors = self.live_neighbor_count(row, col);
+
+                // log!("cell[{}, {}] is initially {:?} and has {} live neighbors",row,col,cell,live_neighbors);
+                next.set(index, Universe::get_next_tick_cell_state(cell, live_neighbors));
+                // log!("    it becomes {:?}", next[index]);
+            }
+        }
+        self.cells = next;
+    }
+
+    /// Toggle single cell state manually
+    pub fn toggle_cell(&mut self, row: u32, column: u32) {
+        self.cells.toggle(self.get_index(row, column));
     }
 
 }

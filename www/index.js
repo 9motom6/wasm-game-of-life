@@ -1,4 +1,4 @@
-import { Universe, Cell } from "wasm-game-of-life";
+import { Universe } from "wasm-game-of-life";
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
 const CELL_SIZE_PX = 5;
@@ -15,6 +15,24 @@ const height = universe.height();
 const canvas = document.getElementById("game-of-life-canvas");
 canvas.height = (CELL_SIZE_PX + 1) * height + 1;
 canvas.width = (CELL_SIZE_PX + 1) * width + 1;
+
+canvas.addEventListener("click", event => {
+    const boundingRect = canvas.getBoundingClientRect();
+
+    const scaleX = canvas.width / boundingRect.width;
+    const scaleY = canvas.height / boundingRect.height;
+
+    const canvasLeft = (event.clientX - boundingRect.left) * scaleX;
+    const canvasTop = (event.clientY - boundingRect.top) * scaleY;
+
+    const row = Math.min(Math.floor(canvasTop / (CELL_SIZE_PX + 1)), height - 1);
+    const col = Math.min(Math.floor(canvasLeft / (CELL_SIZE_PX + 1)), width - 1);
+
+    universe.toggle_cell(row, col);
+
+    drawGrid();
+    drawCells();
+});
 
 const ctx = canvas.getContext('2d');
 
@@ -85,11 +103,11 @@ const bitIsSet = (n, arr) => {
     return (arr[byte] & mask) === mask;
 };
 
+///////////// PAUSE|PLAY
 const isPaused = () => {
     return animationId === null;
 };
 
-///////////// PAUSE PLAY
 const playPauseButton = document.getElementById("play-pause");
 
 const play = () => {
