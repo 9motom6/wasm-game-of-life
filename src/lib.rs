@@ -1,9 +1,10 @@
-mod utils;
+#[macro_use] mod utils;
 
 use wasm_bindgen::prelude::*;
 
 extern crate fixedbitset;
 use fixedbitset::FixedBitSet;
+
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -55,7 +56,9 @@ impl Universe {
                 let cell = self.cells[index];
                 let live_neighbors = self.live_neighbor_count(row, col);
 
+                // log!("cell[{}, {}] is initially {:?} and has {} live neighbors",row,col,cell,live_neighbors);
                 next.set(index, Universe::get_next_tick_cell_state(cell, live_neighbors));
+                // log!("    it becomes {:?}", next[index]);
             }
         }
         self.cells = next;
