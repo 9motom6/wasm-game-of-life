@@ -119,6 +119,8 @@ const pause = () => {
     playPauseButton.textContent = "▶";
     cancelAnimationFrame(animationId);
     animationId = null;
+    drawGrid();
+    drawCells();
 };
 
 playPauseButton.addEventListener("click", event => {
