@@ -81,11 +81,32 @@ const drawCells = () => {
 
     ctx.beginPath();
 
+    // Alive cells.
+    ctx.fillStyle = ALIVE_COLOR;
     for (let row = 0; row < height; row++) {
         for (let col = 0; col < width; col++) {
             const index = getIndex(row, col);
+            if (!bitIsSet(index, cells)) {
+                continue;
+            }
 
-            ctx.fillStyle = bitIsSet(index, cells) ? ALIVE_COLOR : DEAD_COLOR;
+            ctx.fillRect(
+                col * (CELL_SIZE_PX + 1) + 1,
+                row * (CELL_SIZE_PX + 1) + 1,
+                CELL_SIZE_PX,
+                CELL_SIZE_PX
+            );
+        }
+    }
+
+    // Dead cells.
+    ctx.fillStyle = DEAD_COLOR;
+    for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
+            const index = getIndex(row, col);
+            if (bitIsSet(index, cells)) {
+                continue;
+            }
 
             ctx.fillRect(
                 col * (CELL_SIZE_PX + 1) + 1,

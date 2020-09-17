@@ -4,6 +4,7 @@ use wasm_bindgen::prelude::*;
 
 extern crate fixedbitset;
 use fixedbitset::FixedBitSet;
+use crate::utils::Timer;
 
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -22,8 +23,8 @@ pub struct Universe {
 #[wasm_bindgen]
 impl Universe {
     pub fn new() -> Universe {
-        let width = 64;
-        let height = 64;
+        let width = 128;
+        let height = 128;
 
         let size = (width * height) as usize;
         let mut cells = FixedBitSet::with_capacity(size);
@@ -71,6 +72,7 @@ impl Universe {
 
     /// Update all cells according to Game of Life rules
     pub fn tick(&mut self) {
+        let _timer = Timer::new("Universe::tick");
         let mut next = self.cells.clone();
 
         for row in 0..self.height {
